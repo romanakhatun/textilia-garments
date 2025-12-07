@@ -1,23 +1,114 @@
-@import url("https://fonts.googleapis.com/css2?family=Arsenal:ital,wght@0,400;0,700;1,400;1,700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Arsenal:ital,wght@0,400;0,700;1,400;1,700&family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap");
 @import "tailwindcss";
 @plugin "daisyui";
 
+/* DaisyUI v4/v5 CSS Theme System */
+@plugin "daisyui/theme" {
+  name: "light";
+  default: true;
+
+  --color-primary: #5f5e5d;
+  --color-primary-content: #ffffff;
+
+  --color-secondary: #767472;
+  --color-secondary-content: #ffffff;
+
+  --color-accent: #f0d3c6;
+
+  --color-neutral: #f0d3c6;
+
+  --color-base-100: #ffffff;
+  --color-base-200: #f0d3c6;
+  --color-base-300: #767472;
+  --color-base-content: #2c2b2b;
+
+  --color-info: #2094f3;
+  --color-success: #009444;
+  --color-warning: #ff9900;
+  --color-error: #ff5724;
+}
+
+/* Manual DARK THEME */
+@plugin "daisyui/theme" {
+  name: "dark";
+
+  --color-primary: #d1d1d1;
+  --color-primary-content: #000000;
+
+  --color-secondary: #888888;
+  --color-secondary-content: #ffffff;
+
+  --color-accent: #444444;
+
+  --color-neutral: #222222;
+
+  --color-base-100: #1d1d1d;
+  --color-base-200: #262626;
+  --color-base-300: #363636;
+  --color-base-content: #e5e5e5;
+
+  --color-info: #5abaff;
+  --color-success: #66d17e;
+  --color-warning: #ffbb55;
+  --color-error: #ff6655;
+}
+
 body {
+  font-family: "Nunito", sans-serif;
+}
+
+h1,
+h2,
+h3,
+.font-arsenal {
   font-family: "Arsenal", sans-serif;
 }
 
 button {
   border: none;
   box-shadow: none;
+  cursor: pointer;
 }
 
-/* .btn-primary {
-  @apply bg-primary-content btn border-0 shadow-none;
-} */
-
 /* Common Style */
-/* @layer components {
+@layer components {
   .section-heading {
     @apply text-[32px] font-extrabold text-secondary;
   }
-} */
+
+  /* Reusable highlight text style */
+  .highlight-text {
+    @apply relative inline-block;
+  }
+
+  .highlight-text::before {
+    content: "";
+    position: absolute;
+    left: -2px;
+    right: -2px;
+    bottom: -1px;
+    height: 100%;
+    background-image: linear-gradient(
+      180deg,
+      transparent 55%,
+      var(--color-accent) 55%
+    );
+    opacity: 0;
+    transition: all 0.25s ease;
+    z-index: -1;
+  }
+
+  /* Hover effect & Active state for navbar */
+  .highlight-text:hover::before,
+  .highlight-active::before {
+    opacity: 1;
+  }
+  .highlight-title {
+    background-color: transparent;
+    background-image: linear-gradient(
+      180deg,
+      #ffffff00 55%,
+      var(--color-accent) 0%
+    );
+  }
+}
