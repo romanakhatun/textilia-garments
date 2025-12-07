@@ -1,0 +1,23 @@
+@import url("https://fonts.googleapis.com/css2?family=Arsenal:ital,wght@0,400;0,700;1,400;1,700&display=swap");
+@import "tailwindcss";
+@plugin "daisyui";
+
+body {
+  font-family: "Arsenal", sans-serif;
+}
+
+button {
+  border: none;
+  box-shadow: none;
+}
+
+/* .btn-primary {
+  @apply bg-primary-content btn border-0 shadow-none;
+} */
+
+/* Common Style */
+/* @layer components {
+  .section-heading {
+    @apply text-[32px] font-extrabold text-secondary;
+  }
+} */
