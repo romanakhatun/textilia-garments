@@ -1,6 +1,7 @@
 import { Outlet } from "react-router";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
+import BackToTopButton from "../components/BackToTopButton";
 
 const MainLayout = () => {
   return (
@@ -8,10 +9,12 @@ const MainLayout = () => {
       <div className="pb-28">
         <Navbar />
       </div>
-      <main className="h-screen">
+      <main className="min-h-screen">
         <Outlet />
       </main>
       <Footer />
+
+      <BackToTopButton />
     </div>
   );
 };

@@ -2,8 +2,8 @@ import { FaArrowRight } from "react-icons/fa";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
 import banner1 from "../../assets/banner-1.jpg";
+import { Link } from "react-router";
 
-// text and CTA items
 const itemVariants = {
   hidden: { y: 30, opacity: 0 },
   visible: { y: 0, opacity: 1, transition: { type: "spring", stiffness: 100 } },
@@ -11,9 +11,8 @@ const itemVariants = {
 
 const Banner = () => {
   return (
-    <section className="pb-20 pt-10 lg:pt-20 bg-base-100 flex items-center lg:min-h-[90vh]">
+    <section className="pb-20 pt-10 lg:pt-0 bg-base-100 flex items-center lg:min-h-[90vh]">
       <div className="max-w-7xl mx-auto px-4 grid md:grid-cols-2 gap-10 lg:gap-8  w-full">
-        {/* Text and CTA */}
         <div className="flex flex-col justify-center lg:py-10">
           {/* Subtitle */}
           <motion.p
@@ -48,10 +47,13 @@ const Banner = () => {
             variants={itemVariants}
             className="flex flex-row items-center gap-6 mt-8"
           >
-            <button className="btn bg-primary text-primary-content font-bold border-0  rounded-full px-8 py-3 flex items-center gap-3 transition-transform shadow-lg hover:shadow-primary/30">
-              View Products
-              <FaArrowRight />
-            </button>
+            {" "}
+            <Link to="/all-products">
+              <button className="btn-primary font-arsenal px-[29px] h-[50px]">
+                Get Started
+                <FaArrowRight />
+              </button>{" "}
+            </Link>
           </motion.div>
         </div>
 

@@ -72,6 +72,10 @@ button {
 
 /* Common Style */
 @layer components {
+  .btn-primary {
+    @apply btn bg-primary text-primary-content rounded-none font-medium uppercase tracking-[2px];
+  }
+
   .section-heading {
     @apply text-[32px] font-extrabold text-secondary;
   }
