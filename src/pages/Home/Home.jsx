@@ -2,7 +2,7 @@ import Banner from "./Banner";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
 import Process from "./Process";
-import process1Img from "../../assets/process-1.jpg";
+import CustomerFeedback from "./CustomerFeedback";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -24,6 +24,8 @@ const Home = () => {
       >
         <Banner />
         <Process />
+        <hr className="border-t border-base-300" />
+        <CustomerFeedback />
       </motion.div>
     </div>
   );

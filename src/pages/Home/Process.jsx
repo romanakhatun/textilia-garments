@@ -4,7 +4,7 @@ import { FaLongArrowAltRight } from "react-icons/fa";
 import process1Img from "../../assets/process-1.jpg";
 import process2Img from "../../assets/process-2.jpg";
 import process3Img from "../../assets/process-3.jpg";
-import process4Img from "../../assets/banner-1.jpg";
+import process4Img from "../../assets/process-4.jpg";
 import ProcessStepCard from "./ProcessStepCard";
 
 const processSteps = [
