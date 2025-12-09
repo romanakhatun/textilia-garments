@@ -110,15 +110,18 @@ const Register = () => {
           <label className="form-control w-full">
             <div className="label">
               <span className="label-text text-base font-medium text-gray-700">
-                Photo
+                Photo <span className="text-red-700">*</span>
               </span>
             </div>
             <input
               type="file"
-              {...register("photo")}
+              {...register("photo", { required: true })}
               placeholder="Name"
               className="file-input input-bordered w-full bg-white"
             />
+            {errors.email?.type === "required" && (
+              <span className="text-red-700">Photo is required</span>
+            )}
           </label>
         </div>
 
