@@ -6,6 +6,8 @@ import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
 import About from "../pages/About";
 import AddProduct from "../pages/Products/AddProduct";
+import ProtectedRoute from "../components/ProtectedRoute";
+import DashboardLayout from "../layouts/DashboardLayout";
 
 export const router = createBrowserRouter([
   {
@@ -32,6 +34,20 @@ export const router = createBrowserRouter([
     children: [
       { path: "/login", element: <Login /> },
       { path: "/register", element: <Register /> },
+    ],
+  },
+  {
+    path: "/dashboard",
+    element: (
+      <ProtectedRoute>
+        <DashboardLayout></DashboardLayout>
+      </ProtectedRoute>
+    ),
+    children: [
+      {
+        path: "my-parcels",
+        element: <h1>hello</h1>,
+      },
     ],
   },
 ]);
