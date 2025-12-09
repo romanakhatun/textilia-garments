@@ -1,18 +1,29 @@
 import { FcGoogle } from "react-icons/fc";
 import useAuth from "../../hooks/useAuth";
 import { useLocation, useNavigate } from "react-router";
+import useAxiosSecure from "../../hooks/useAxiosSecure";
 
 const SocialLogin = () => {
   const { signInGoogleUser } = useAuth();
+  const axiosSecure = useAxiosSecure();
   const location = useLocation();
-  console.log("location in social", location);
   const navigate = useNavigate();
+  // console.log("location in social", location);
 
   const handleGoogleSignIn = () => {
     signInGoogleUser()
       .then((result) => {
-        console.log("google signin", result.user);
-        navigate(location?.state || "/");
+        // create user in the database
+        const userInfo = {
+          email: result.user.email,
+          displayName: result.user.displayName,
+          photoURL: result.user.photoURL,
+        };
+
+        axiosSecure.post("/users", userInfo).then((res) => {
+          console.log("user data has been stored", res.data);
+          navigate(location.state || "/");
+        });
       })
       .catch((err) => {
         console.log(err.message);

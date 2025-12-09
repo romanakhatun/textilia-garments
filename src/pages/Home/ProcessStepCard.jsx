@@ -6,7 +6,6 @@ const ProcessStepCard = ({ number, title, description, index }) => {
     hidden: { y: 20, opacity: 0 },
     visible: { y: 0, opacity: 1 },
   };
-  console.log(index);
 
   return (
     <motion.div

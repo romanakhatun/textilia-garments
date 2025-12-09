@@ -1,9 +1,12 @@
 import { useForm } from "react-hook-form";
 import { Link, useLocation, useNavigate } from "react-router";
 import useAuth from "../../hooks/useAuth";
+import useMessage from "../../hooks/useMessage";
+import AlertMessage from "../../components/AlertMessage";
 
 const Login = () => {
   const { signInUser } = useAuth();
+  const { error, success, showError, showSuccess } = useMessage();
   const {
     register,
     handleSubmit,
@@ -17,12 +20,13 @@ const Login = () => {
     console.log("signin data", data);
 
     signInUser(data.email, data.password)
-      .then((result) => {
-        console.log(result.user);
+      .then(() => {
+        // console.log(result.user);
+        showSuccess("Login Successful");
         navigate(location?.state || "/");
       })
       .catch((err) => {
-        console.log(err);
+        showError(err.message || "Login Failed");
       });
   };
 
@@ -31,10 +35,12 @@ const Login = () => {
       <h2 className="text-3xl font-extrabold mb-2 mt-4 text-black">
         Welcome Back
       </h2>
-      <p className="text-base text-black mb-5">Login with TexTila</p>
+      <p className="text-base text-black mb-5">Login with Textilia</p>
 
       {/* Login Form */}
       <form onSubmit={handleSubmit(handleLogin)} className="space-y-3">
+        <AlertMessage type="error" message={error} />
+        <AlertMessage type="success" message={success} />
         <div>
           <label className="form-control w-full">
             <div className="label">

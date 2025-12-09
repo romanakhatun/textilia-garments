@@ -58,9 +58,7 @@ const Banner = () => {
         </div>
 
         <motion.div
-          initial={{ x: 50, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
+          variants={itemVariants}
           className="relative h-96 md:h-[500px] hidden md:block lg:h-full overflow-hidden"
         >
           <img
