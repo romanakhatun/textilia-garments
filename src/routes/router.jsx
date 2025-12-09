@@ -5,11 +5,23 @@ import AuthLayouts from "../layouts/AuthLayouts";
 import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
 import About from "../pages/About";
-import AddProduct from "../pages/Products/AddProduct";
 import ProtectedRoute from "../components/ProtectedRoute";
 import DashboardLayout from "../layouts/DashboardLayout";
+import NotFound from "../pages/NotFound";
+import BuyerProfile from "../pages/Dashboard/Buyer/BuyerProfile";
+import TrackOrder from "../pages/Dashboard/Buyer/TrackOrder";
+import BuyerOrders from "../pages/Dashboard/Buyer/BuyerOrders";
+import ManageProducts from "../pages/Dashboard/Manager/ManageProducts";
+import PendingOrders from "../pages/Dashboard/Manager/PendingOrders";
+import ApprovedOrders from "../pages/Dashboard/Manager/ApprovedOrders";
+import ManagerProfile from "../pages/Dashboard/Manager/ManagerProfile";
+import AllOrdersAdmin from "../pages/Dashboard/Admin/AllOrdersAdmin";
+import ManageUsers from "../pages/Dashboard/Admin/ManageUsers";
+import AllProductsAdmin from "../pages/Dashboard/Admin/AllProductsAdmin";
+import AddProduct from "../pages/Dashboard/Manager/AddProduct";
 
 export const router = createBrowserRouter([
+  // == PUBLIC WEBSITE ROUTES
   {
     path: "/",
     element: <MainLayout />,
@@ -22,12 +34,9 @@ export const router = createBrowserRouter([
         path: "/about",
         element: <About />,
       },
-      {
-        path: "/add-product",
-        element: <AddProduct />,
-      },
     ],
   },
+  // == AUTH ROUTES
   {
     path: "/",
     element: <AuthLayouts />,
@@ -36,6 +45,7 @@ export const router = createBrowserRouter([
       { path: "/register", element: <Register /> },
     ],
   },
+  // == DASHBOARD ROUTES
   {
     path: "/dashboard",
     element: (
@@ -44,10 +54,27 @@ export const router = createBrowserRouter([
       </ProtectedRoute>
     ),
     children: [
-      {
-        path: "my-parcels",
-        element: <h1>hello</h1>,
-      },
+      // ---- BUYER ROUTES
+      { path: "my-orders", element: <BuyerOrders /> },
+      { path: "track-order/:orderId", element: <TrackOrder /> },
+      { path: "profile", element: <BuyerProfile /> },
+
+      // ---- MANAGER ROUTES
+      { path: "add-product", element: <AddProduct /> },
+      { path: "manage-products", element: <ManageProducts /> },
+      { path: "pending-orders", element: <PendingOrders /> },
+      { path: "approved-orders", element: <ApprovedOrders /> },
+      { path: "manager-profile", element: <ManagerProfile /> },
+
+      // ---- ADMIN ROUTES
+      { path: "manage-users", element: <ManageUsers /> },
+      { path: "all-products", element: <AllProductsAdmin /> },
+      { path: "all-orders", element: <AllOrdersAdmin /> },
     ],
+  },
+  // ==== 404 Not Found
+  {
+    path: "*",
+    element: <NotFound />,
   },
 ]);
