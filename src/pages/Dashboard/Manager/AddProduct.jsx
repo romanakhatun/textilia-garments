@@ -15,7 +15,9 @@ const AddProduct = () => {
     formState: { errors },
   } = useForm();
 
-  const onSubmit = async (data) => {
+  const handleAddProduct = async (data) => {
+    console.log(data);
+
     data.price = parseFloat(data.price);
     data.availableQuantity = parseInt(data.availableQuantity);
     data.minimumOrderQuantity = parseInt(data.minimumOrderQuantity);
@@ -49,7 +51,10 @@ const AddProduct = () => {
         Fill in the product details below
       </p>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="mt-10 space-y-10">
+      <form
+        onSubmit={handleSubmit(handleAddProduct)}
+        className="mt-10 space-y-10"
+      >
         {/* GRID */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
           {/* LEFT SIDE */}
@@ -64,7 +69,9 @@ const AddProduct = () => {
                 className="input input-bordered w-full bg-base-100"
               />
               {errors.name && (
-                <p className="text-error text-sm mt-1">{errors.name.message}</p>
+                <p className="text-red-700 text-sm mt-1">
+                  {errors.name.message}
+                </p>
               )}
             </div>
 
@@ -84,7 +91,7 @@ const AddProduct = () => {
                 <option>Kids Wear</option>
               </select>
               {errors.category && (
-                <p className="text-error text-sm mt-1">
+                <p className="text-red-700 text-sm mt-1">
                   {errors.category.message}
                 </p>
               )}
@@ -103,7 +110,7 @@ const AddProduct = () => {
                 className="input input-bordered w-full bg-base-100"
               />
               {errors.availableQuantity && (
-                <p className="text-error text-sm mt-1">
+                <p className="text-red-700 text-sm mt-1">
                   {errors.availableQuantity.message}
                 </p>
               )}
@@ -123,7 +130,7 @@ const AddProduct = () => {
                 <option value="PayFast">PayFast</option>
               </select>
               {errors.paymentOption && (
-                <p className="text-error text-sm mt-1">
+                <p className="text-red-700 text-sm mt-1">
                   {errors.paymentOption.message}
                 </p>
               )}
@@ -139,7 +146,7 @@ const AddProduct = () => {
                 className="input input-bordered w-full bg-base-100"
               />
               {errors.price && (
-                <p className="text-error text-sm mt-1">
+                <p className="text-red-700 text-sm mt-1">
                   {errors.price.message}
                 </p>
               )}
@@ -162,7 +169,7 @@ const AddProduct = () => {
                 className="input input-bordered w-full bg-base-100"
               />
               {errors.minimumOrderQuantity && (
-                <p className="text-error text-sm mt-1">
+                <p className="text-red-700 text-sm mt-1">
                   {errors.minimumOrderQuantity.message}
                 </p>
               )}
@@ -180,7 +187,7 @@ const AddProduct = () => {
                 className="input input-bordered w-full bg-base-100"
               />
               {errors.images && (
-                <p className="text-error text-sm mt-1">
+                <p className="text-red-700 text-sm mt-1">
                   {errors.images.message}
                 </p>
               )}
@@ -209,7 +216,7 @@ const AddProduct = () => {
                 rows={5}
               ></textarea>
               {errors.description && (
-                <p className="text-error text-sm mt-1">
+                <p className="text-red-700 text-sm mt-1">
                   {errors.description.message}
                 </p>
               )}

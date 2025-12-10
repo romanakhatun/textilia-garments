@@ -19,6 +19,9 @@ import AddProduct from "../pages/Dashboard/Manager/AddProduct";
 import ProtectedRoute from "./ProtectedRoute";
 import UserProfile from "../pages/Dashboard/Shared/UserProfile";
 import AdminRoute from "./AdminRoute";
+import Products from "../pages/Products/Products";
+import ProductsDetails from "../pages/Products/ProductsDetails";
+import Contact from "../pages/Contact";
 
 export const router = createBrowserRouter([
   // == PUBLIC WEBSITE ROUTES
@@ -33,6 +36,22 @@ export const router = createBrowserRouter([
       {
         path: "/about",
         element: <About />,
+      },
+      {
+        path: "/contact",
+        element: <Contact />,
+      },
+      {
+        path: "/all-products",
+        element: <Products />,
+      },
+      {
+        path: "/product/:id",
+        element: (
+          <ProtectedRoute>
+            <ProductsDetails />
+          </ProtectedRoute>
+        ),
       },
     ],
   },

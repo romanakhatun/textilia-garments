@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, NavLink } from "react-router";
+import { Link } from "react-router";
 import { HiOutlineBars3 } from "react-icons/hi2";
 import { TfiClose } from "react-icons/tfi";
 import ThemeToggle from "./ThemeToggle";
@@ -11,7 +11,7 @@ import UserDropdown from "./UserDropdown";
 const navLinksPublic = [
   { name: "Home", path: "/" },
   { name: "About", path: "/about" },
-  { name: "Services", path: "/services" },
+  // { name: "Services", path: "/services" },
   { name: "Products", path: "/all-products" },
   { name: "Contact", path: "/contact" },
 ];

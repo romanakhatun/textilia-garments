@@ -3,6 +3,7 @@ import Banner from "./Banner";
 import { motion } from "framer-motion";
 import Process from "./Process";
 import CustomerFeedback from "./CustomerFeedback";
+import HomeProducts from "./HomeProducts";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -23,6 +24,7 @@ const Home = () => {
         animate="visible"
       >
         <Banner />
+        <HomeProducts />
         <Process />
         <hr className="border-t border-base-300" />
         <CustomerFeedback />
