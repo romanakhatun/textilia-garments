@@ -16,9 +16,11 @@ const ManageUsers = () => {
       return res.data;
     },
   });
+  // console.log("user fetch from backend", users);
 
-  // Update Role
+  // === Update Role
   const updateRole = async (id, role) => {
+    // console.log("Attempting to update", id, "to role:", role);
     const confirm = await Swal.fire({
       title: "Change Role?",
       text: `Assign role: ${role}`,
@@ -28,25 +30,25 @@ const ManageUsers = () => {
     });
 
     if (!confirm.isConfirmed) return;
-
-    await axiosSecure.patch(`/users/${id}`, { role });
-
+    await axiosSecure.patch(`/users/${id}/role`, { role });
     Swal.fire("Updated!", "User role updated successfully.", "success");
 
     refetch();
     refetchRole(); // Dashboard updates instantly
   };
 
-  //  Approve User
+  // === Approve User
   const approveUser = async (user) => {
-    await axiosSecure.patch(`/users/${user._id}`, { status: "approved" });
-
-    Swal.fire("Approved!", `${user.displayName} is now approved.`, "success");
-
+    await axiosSecure.patch(`/users/${user._id}/approve`);
+    await Swal.fire(
+      "Approved!",
+      `${user.displayName} is now approved.`,
+      "success"
+    );
     refetch();
   };
 
-  // Suspend User
+  // === Suspend User
   const suspendUser = async (user) => {
     const { value: reason } = await Swal.fire({
       title: `Suspend ${user.displayName}?`,
@@ -54,21 +56,15 @@ const ManageUsers = () => {
       inputPlaceholder: "Enter reason...",
       showCancelButton: true,
     });
-
     if (!reason) return;
-
-    await axiosSecure.patch(`/users/${user._id}`, {
-      status: "suspended",
-      suspendReason: reason,
-    });
-
+    await axiosSecure.patch(`/users/${user._id}/suspend`, { reason });
     Swal.fire("Suspended!", "User has been suspended.", "success");
 
     refetch();
   };
 
   return (
-    <div className="p-6">
+    <div>
       <h2 className="text-3xl font-bold mb-4">Manage Users ({users.length})</h2>
 
       {/* SEARCH */}

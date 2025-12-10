@@ -20,7 +20,7 @@ const DashboardLayout = () => {
   const { signOutUser } = useAuth();
   const { role } = useRole();
 
-  console.log(role);
+  // console.log(role);
 
   //  ADMIN Sidebar Menu
   const adminMenu = [
@@ -118,7 +118,9 @@ const DashboardLayout = () => {
             <Logo logoColor="text-black" />
           </nav>
           {/* Page content here */}
-          <Outlet />
+          <div className="p-6">
+            <Outlet />
+          </div>
         </div>
 
         <div className="drawer-side is-drawer-close:overflow-visible ">
