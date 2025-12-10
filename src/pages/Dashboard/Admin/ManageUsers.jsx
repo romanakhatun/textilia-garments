@@ -1,182 +1,184 @@
+import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import Swal from "sweetalert2";
-import { FaUser, FaUserTie, FaBan } from "react-icons/fa";
-import { MdAdminPanelSettings } from "react-icons/md";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
+import useRole from "../../../hooks/useRole";
+import Swal from "sweetalert2";
 
 const ManageUsers = () => {
   const axiosSecure = useAxiosSecure();
-  const queryClient = useQueryClient();
+  const { refetchRole } = useRole();
+  const [searchText, setSearchText] = useState("");
 
-  const [search, setSearch] = useState("");
-
-  // Fetch Users
-  const { data: users = [] } = useQuery({
-    queryKey: ["users", search],
+  const { refetch, data: users = [] } = useQuery({
+    queryKey: ["users"],
     queryFn: async () => {
-      const res = await axiosSecure.get(`/users?searchText=${search}`);
+      const res = await axiosSecure.get("/users");
       return res.data;
     },
   });
 
-  // update role
-  const roleMutation = useMutation({
-    mutationFn: async ({ userId, newRole }) =>
-      await axiosSecure.patch(`/users/${userId}/role`, { role: newRole }),
-
-    onSuccess: () => {
-      queryClient.invalidateQueries(["users"]); // refresh
-      Swal.fire("Updated!", "User role changed.", "success");
-    },
-  });
-
-  //  suspend or activate user
-  const statusMutation = useMutation({
-    mutationFn: async ({ userId, newStatus }) =>
-      await axiosSecure.patch(`/users/${userId}`, { status: newStatus }),
-
-    onSuccess: () => {
-      queryClient.invalidateQueries(["users"]);
-      Swal.fire("Updated!", "User status updated.", "success");
-    },
-  });
-
-  // Handle role change confirmation
-  const handleRoleChange = (user, newRole) => {
-    Swal.fire({
+  // Update Role
+  const updateRole = async (id, role) => {
+    const confirm = await Swal.fire({
       title: "Change Role?",
-      text: `Set role to ${newRole}?`,
+      text: `Assign role: ${role}`,
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "Yes",
-    }).then((res) => {
-      if (res.isConfirmed) {
-        roleMutation.mutate({ userId: user._id, newRole });
-      }
+      confirmButtonText: "Yes, Update",
     });
+
+    if (!confirm.isConfirmed) return;
+
+    await axiosSecure.patch(`/users/${id}`, { role });
+
+    Swal.fire("Updated!", "User role updated successfully.", "success");
+
+    refetch();
+    refetchRole(); // Dashboard updates instantly
   };
 
-  // Suspend / Activate
-  const handleStatusChange = (user) => {
-    const newStatus = user.status === "active" ? "suspended" : "active";
+  //  Approve User
+  const approveUser = async (user) => {
+    await axiosSecure.patch(`/users/${user._id}`, { status: "approved" });
 
-    Swal.fire({
-      title: `Confirm ${newStatus}?`,
-      icon: "question",
+    Swal.fire("Approved!", `${user.displayName} is now approved.`, "success");
+
+    refetch();
+  };
+
+  // Suspend User
+  const suspendUser = async (user) => {
+    const { value: reason } = await Swal.fire({
+      title: `Suspend ${user.displayName}?`,
+      input: "textarea",
+      inputPlaceholder: "Enter reason...",
       showCancelButton: true,
-    }).then((res) => {
-      if (res.isConfirmed) {
-        statusMutation.mutate({ userId: user._id, newStatus });
-      }
     });
+
+    if (!reason) return;
+
+    await axiosSecure.patch(`/users/${user._id}`, {
+      status: "suspended",
+      suspendReason: reason,
+    });
+
+    Swal.fire("Suspended!", "User has been suspended.", "success");
+
+    refetch();
   };
 
   return (
     <div className="p-6">
-      <h1 className="text-3xl font-extrabold mb-4">Manage Users</h1>
+      <h2 className="text-3xl font-bold mb-4">Manage Users ({users.length})</h2>
 
-      {/* Search */}
-      <div className="flex justify-end mb-5">
+      {/* SEARCH */}
+      <label className="input flex items-center gap-2 mb-5">
         <input
-          type="text"
-          placeholder="Search users..."
-          className="input input-bordered w-72"
-          onChange={(e) => setSearch(e.target.value)}
+          type="search"
+          onChange={(e) => setSearchText(e.target.value)}
+          placeholder="Search users"
+          className="grow"
         />
-      </div>
+      </label>
 
-      {/* Table */}
-      <div className="overflow-x-auto bg-base-100 shadow rounded-xl">
+      <div className="overflow-x-auto">
         <table className="table">
-          <thead className="bg-base-200">
+          <thead>
             <tr>
               <th>#</th>
               <th>User</th>
-              <th>Role</th>
+              <th>Email</th>
               <th>Status</th>
-              <th>Change Role</th>
-              <th>Suspend</th>
+              <th>Role</th>
+              <th>Actions</th>
             </tr>
           </thead>
 
           <tbody>
-            {users.map((user, index) => {
-              const roleIcon =
-                user.role === "admin" ? (
-                  <MdAdminPanelSettings className="text-red-600" />
-                ) : user.role === "manager" ? (
-                  <FaUserTie className="text-blue-600" />
-                ) : (
-                  <FaUser className="text-green-600" />
-                );
-
-              return (
+            {users
+              .filter(
+                (u) =>
+                  u.displayName?.toLowerCase().includes(searchText) ||
+                  u.email?.toLowerCase().includes(searchText)
+              )
+              .map((user, index) => (
                 <tr key={user._id}>
                   <td>{index + 1}</td>
 
-                  {/* User Info */}
+                  {/* USER INFO */}
                   <td>
                     <div className="flex items-center gap-3">
-                      <img
-                        src={user.photoURL}
-                        className="w-10 h-10 rounded-full object-cover"
-                      />
+                      <div className="avatar">
+                        <div className="mask mask-squircle w-12 h-12">
+                          <img src={user.photoURL} alt="" />
+                        </div>
+                      </div>
+
                       <div>
-                        <p className="font-semibold">{user.displayName}</p>
-                        <p className="text-xs opacity-60">{user.email}</p>
+                        <div className="font-bold">{user.displayName}</div>
+                        <div className="text-sm opacity-50">
+                          {new Date(user.createdAt).toLocaleDateString()}
+                        </div>
                       </div>
                     </div>
                   </td>
 
-                  {/* Role */}
-                  <td className="font-medium flex items-center gap-2">
-                    {roleIcon} {user.role}
-                  </td>
+                  <td>{user.email}</td>
 
-                  {/* Status Badge */}
+                  {/* STATUS */}
                   <td>
                     <span
                       className={`badge ${
-                        user.status === "active"
+                        user.status === "approved"
                           ? "badge-success"
-                          : "badge-error"
+                          : user.status === "suspended"
+                          ? "badge-error"
+                          : "badge-warning"
                       }`}
                     >
                       {user.status}
                     </span>
+
+                    {user.suspendReason && (
+                      <p className="text-xs text-red-500">
+                        ({user.suspendReason})
+                      </p>
+                    )}
                   </td>
 
-                  {/* Change Role */}
+                  {/* ROLE DROPDOWN */}
                   <td>
                     <select
-                      className="select select-bordered select-sm"
-                      defaultValue=""
-                      onChange={(e) => handleRoleChange(user, e.target.value)}
+                      defaultValue={user.role}
+                      onChange={(e) => updateRole(user._id, e.target.value)}
+                      className="select select-bordered"
                     >
-                      <option value="" disabled>
-                        Change Role
-                      </option>
                       <option value="buyer">Buyer</option>
                       <option value="manager">Manager</option>
                       <option value="admin">Admin</option>
                     </select>
                   </td>
 
-                  {/* Suspend */}
-                  <td>
+                  {/* ACTION BUTTONS */}
+                  <td className="flex gap-2">
+                    {user.status !== "approved" && (
+                      <button
+                        onClick={() => approveUser(user)}
+                        className="btn btn-success btn-xs"
+                      >
+                        Approve
+                      </button>
+                    )}
+
                     <button
-                      className={`btn btn-sm ${
-                        user.status === "active" ? "btn-error" : "btn-success"
-                      }`}
-                      onClick={() => handleStatusChange(user)}
+                      onClick={() => suspendUser(user)}
+                      className="btn btn-error btn-xs"
                     >
-                      {user.status === "active" ? <FaBan /> : "Activate"}
+                      Suspend
                     </button>
                   </td>
                 </tr>
-              );
-            })}
+              ))}
           </tbody>
         </table>
       </div>

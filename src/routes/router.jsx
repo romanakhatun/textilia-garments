@@ -19,6 +19,7 @@ import AllOrdersAdmin from "../pages/Dashboard/Admin/AllOrdersAdmin";
 import ManageUsers from "../pages/Dashboard/Admin/ManageUsers";
 import AllProductsAdmin from "../pages/Dashboard/Admin/AllProductsAdmin";
 import AddProduct from "../pages/Dashboard/Manager/AddProduct";
+import AdminProfile from "../pages/Dashboard/Admin/AdminProfile";
 
 export const router = createBrowserRouter([
   // == PUBLIC WEBSITE ROUTES
@@ -64,12 +65,13 @@ export const router = createBrowserRouter([
       { path: "manage-products", element: <ManageProducts /> },
       { path: "pending-orders", element: <PendingOrders /> },
       { path: "approved-orders", element: <ApprovedOrders /> },
-      { path: "manager-profile", element: <ManagerProfile /> },
+      { path: "profile", element: <ManagerProfile /> },
 
       // ---- ADMIN ROUTES
       { path: "manage-users", element: <ManageUsers /> },
       { path: "all-products", element: <AllProductsAdmin /> },
       { path: "all-orders", element: <AllOrdersAdmin /> },
+      { path: "profile", element: <AdminProfile /> },
     ],
   },
   // ==== 404 Not Found

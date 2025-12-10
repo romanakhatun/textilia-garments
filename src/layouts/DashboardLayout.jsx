@@ -14,9 +14,13 @@ import { FaClipboardList, FaUserCircle } from "react-icons/fa";
 
 import useAuth from "../hooks/useAuth";
 import Logo from "../components/Logo";
+import useRole from "../hooks/useRole";
 
 const DashboardLayout = () => {
-  const { role, signOutUser } = useAuth();
+  const { signOutUser } = useAuth();
+  const { role } = useRole();
+
+  console.log(role);
 
   //  ADMIN Sidebar Menu
   const adminMenu = [
@@ -61,7 +65,11 @@ const DashboardLayout = () => {
       path: "approved-orders",
       icon: <MdApproval size={22} />,
     },
-    { name: "My Profile", path: "profile", icon: <FaUserCircle size={22} /> },
+    {
+      name: "Manager Profile",
+      path: "profile",
+      icon: <FaUserCircle size={22} />,
+    },
   ];
 
   //  BUYER Sidebar Menu
@@ -77,7 +85,11 @@ const DashboardLayout = () => {
       path: "track-order",
       icon: <MdPendingActions size={22} />,
     },
-    { name: "My Profile", path: "profile", icon: <FaUserCircle size={22} /> },
+    {
+      name: "Buyer Profile",
+      path: "profile",
+      icon: <FaUserCircle size={22} />,
+    },
   ];
 
   // Choose menu by role
@@ -123,6 +135,7 @@ const DashboardLayout = () => {
                 <li key={item.name}>
                   <NavLink
                     to={item.path}
+                    {...(item.path === "/dashboard" ? { end: true } : {})}
                     className={({ isActive }) =>
                       `is-drawer-close:tooltip is-drawer-close:tooltip-right ${
                         isActive

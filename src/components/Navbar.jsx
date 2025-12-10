@@ -19,7 +19,6 @@ const navLinksPublic = [
 const navLinksPrivate = [
   { name: "Home", path: "/" },
   { name: "Products", path: "/all-products" },
-  { name: "Add Products", path: "/add-product" },
   { name: "Dashboard", path: "/dashboard" },
 ];
 
