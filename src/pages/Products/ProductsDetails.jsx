@@ -16,6 +16,7 @@ const ProductDetails = () => {
       return res.data;
     },
   });
+  // console.log(product);
 
   if (isLoading) {
     return <LoadingSpinner message="Data Loading ..." />;
@@ -83,6 +84,10 @@ const ProductDetails = () => {
               <span className="font-semibold">Minimum Order Quantity:</span>{" "}
               {product.minimumOrderQuantity}
             </p>
+            <p>
+              <span className="font-semibold">Payment:</span>{" "}
+              <span className="badge">{product.paymentOption}</span>
+            </p>
           </div>
 
           {/* Description */}
@@ -96,7 +101,7 @@ const ProductDetails = () => {
               <h3 className="font-semibold text-lg mb-2">Demo Video</h3>
               <iframe
                 className="w-full h-64 rounded-xl"
-                src={product.demoVideo.replace("watch?v=", "embed/")}
+                src={product.demoVideo}
                 title="Product Video"
                 allowFullScreen
               ></iframe>

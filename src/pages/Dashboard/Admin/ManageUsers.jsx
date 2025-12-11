@@ -16,11 +16,9 @@ const ManageUsers = () => {
       return res.data;
     },
   });
-  // console.log("user fetch from backend", users);
 
   // === Update Role
   const updateRole = async (id, role) => {
-    // console.log("Attempting to update", id, "to role:", role);
     const confirm = await Swal.fire({
       title: "Change Role?",
       text: `Assign role: ${role}`,

@@ -3,8 +3,10 @@ import Swal from "sweetalert2";
 import useAuth from "../../../hooks/useAuth";
 import useRole from "../../../hooks/useRole";
 import LoadingSpinner from "../../../components/LoadingSpinner";
+import { MdLogout } from "react-icons/md";
+
 const UserProfile = () => {
-  const { user, updateUserProfile } = useAuth();
+  const { user, updateUserProfile, signOutUser } = useAuth();
   const { data: userData, roleLoading } = useRole();
   console.log("user data", userData);
 
@@ -81,25 +83,31 @@ const UserProfile = () => {
           </div>
 
           {/* Status & Suspend Feedback */}
-          <div className="mt-4 w-full text-center">
-            <span
-              className={`badge ${
-                userData.status === "approved"
-                  ? "badge-success"
-                  : userData.status === "suspended"
-                  ? "badge-error"
-                  : "badge-warning"
-              } text-white font-bold capitalize`}
-            >
-              Status: {userData.status || "pending"}
-            </span>
 
+          <div className="mt-4 w-full text-center">
+            {userData?.role !== "buyer" && (
+              <span
+                className={`badge ${
+                  userData.status === "approved"
+                    ? "badge-success"
+                    : userData.status === "suspended"
+                    ? "badge-error"
+                    : "badge-warning"
+                } text-white font-bold capitalize`}
+              >
+                Status: {userData.status || "pending"}
+              </span>
+            )}
             {userData.suspendReason && (
               <div className="mt-3 p-3 bg-error/10 text-error text-sm rounded-lg border border-error">
                 <p className="font-bold">Suspension Reason:</p>
                 <p className="capitalize">{userData.suspendReason}</p>
               </div>
             )}
+            <button onClick={() => signOutUser()} className="btn-primary mt-4">
+              <MdLogout size={22} />
+              <>Logout</>
+            </button>
           </div>
         </div>
 

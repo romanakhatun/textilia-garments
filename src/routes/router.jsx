@@ -22,6 +22,7 @@ import AdminRoute from "./AdminRoute";
 import Products from "../pages/Products/Products";
 import ProductsDetails from "../pages/Products/ProductsDetails";
 import Contact from "../pages/Contact";
+import CreateOrder from "../pages/Order/CreateOrder";
 
 export const router = createBrowserRouter([
   // == PUBLIC WEBSITE ROUTES
@@ -50,6 +51,14 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <ProductsDetails />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/order/:id",
+        element: (
+          <ProtectedRoute>
+            <CreateOrder />
           </ProtectedRoute>
         ),
       },

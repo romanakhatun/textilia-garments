@@ -19,7 +19,6 @@ import useRole from "../hooks/useRole";
 const DashboardLayout = () => {
   const { signOutUser } = useAuth();
   const { role } = useRole();
-
   // console.log(role);
 
   //  ADMIN Sidebar Menu
@@ -96,10 +95,6 @@ const DashboardLayout = () => {
   const menu =
     role === "admin" ? adminMenu : role === "manager" ? managerMenu : buyerMenu;
 
-  const handleLogout = () => {
-    signOutUser();
-  };
-
   return (
     <div>
       <div className="drawer lg:drawer-open">
@@ -139,7 +134,7 @@ const DashboardLayout = () => {
                     to={item.path}
                     {...(item.path === "/dashboard" ? { end: true } : {})}
                     className={({ isActive }) =>
-                      `is-drawer-close:tooltip is-drawer-close:tooltip-right ${
+                      `is-drawer-close:tooltip is-drawer-close:tooltip-primary is-drawer-close:tooltip-right ${
                         isActive
                           ? "bg-primary text-primary-content"
                           : "hover:bg-base-200"
@@ -159,7 +154,7 @@ const DashboardLayout = () => {
             <ul className="menu w-full mb-4">
               <li>
                 <button
-                  onClick={handleLogout}
+                  onClick={() => signOutUser()}
                   className="flex items-center gap-3 px-3 py-2 w-full rounded-md font-semibold hover:bg-error hover:text-white transition"
                 >
                   <MdLogout size={22} />
