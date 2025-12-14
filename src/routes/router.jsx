@@ -25,6 +25,9 @@ import Contact from "../pages/Contact";
 import CreateOrder from "../pages/Order/CreateOrder";
 import ManagerRoute from "./ManagerRoute";
 import Dashboard from "../pages/Dashboard/Dashboard";
+import Payment from "../pages/Order/PaymentOrder";
+import PaymentSuccess from "../pages/Order/PaymentSuccess";
+import PaymentCancelled from "../pages/Order/PaymentCancelled";
 
 export const router = createBrowserRouter([
   // == PUBLIC WEBSITE ROUTES
@@ -61,6 +64,30 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <CreateOrder />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/payment",
+        element: (
+          <ProtectedRoute>
+            <Payment />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "payment-success",
+        element: (
+          <ProtectedRoute>
+            <PaymentSuccess />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "payment-cancelled",
+        element: (
+          <ProtectedRoute>
+            <PaymentCancelled />
           </ProtectedRoute>
         ),
       },

@@ -137,9 +137,9 @@ const UserProfile = () => {
               </label>
               <input
                 type="email"
-                disabled
+                readOnly
                 {...register("email")}
-                className="input input-bordered w-full bg-base-200 cursor-not-allowed"
+                className="input input-bordered w-full cursor-not-allowed"
               />
             </div>
 

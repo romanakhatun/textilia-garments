@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { useParams, useNavigate } from "react-router";
 import { useQuery } from "@tanstack/react-query";
@@ -13,8 +13,8 @@ const CreateOrder = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  // Fetch product details
-  const { data: product, isLoading: loadingProduct } = useQuery({
+  // Fetch product
+  const { data: product, isLoading } = useQuery({
     queryKey: ["product", productId],
     queryFn: async () => {
       const res = await axiosSecure.get(`/products/${productId}`);
@@ -31,270 +31,148 @@ const CreateOrder = () => {
     setError,
     clearErrors,
     formState: { errors, isSubmitting },
-  } = useForm({
-    defaultValues: {
-      email: user?.email || "",
-      productTitle: product?.name || "",
-      price: product?.price || 0,
-      firstName: "",
-      lastName: "",
-      quantity: product?.minimumOrderQuantity || 1,
-      contactNumber: "",
-      deliveryAddress: "",
-      notes: "",
-    },
-  });
-  const watchedQuantity = watch("quantity", product?.minimumOrderQuantity || 1);
-  const watchedPrice = watch("price", product?.price || 0);
+  } = useForm();
+
+  const quantity = watch("quantity", product?.minimumOrderQuantity || 1);
 
   const orderTotal = useMemo(() => {
-    const q = Number(watchedQuantity) || 0;
-    const p = Number(watchedPrice) || 0;
-    return (q * p).toFixed(2);
-  }, [watchedQuantity, watchedPrice]);
-
-  useEffect(() => {}, [product]);
+    return ((product?.price || 0) * Number(quantity || 0)).toFixed(2);
+  }, [quantity, product]);
 
   const validateQuantity = (value) => {
-    const quantity = Number(value);
-    if (quantity <= 0) return "Enter a valid quantity";
-    if (quantity < product.minimumOrderQuantity)
-      return `Minimum order is ${product.minimumOrderQuantity}`;
-    if (quantity > product.availableQuantity)
-      return `Cannot order more than available (${product.availableQuantity})`;
+    const q = Number(value);
+    if (q < product.minimumOrderQuantity)
+      return `Minimum order ${product.minimumOrderQuantity}`;
+    if (q > product.availableQuantity)
+      return `Max available ${product.availableQuantity}`;
     return true;
   };
 
-  const onSubmit = async (formData) => {
-    const v = validateQuantity(formData.quantity);
-    if (v !== true) {
-      setError("quantity", { type: "manual", message: v });
+  const onSubmit = async (data) => {
+    const valid = validateQuantity(data.quantity);
+    if (valid !== true) {
+      setError("quantity", { message: valid });
       return;
-    } else {
-      clearErrors("quantity");
     }
+    clearErrors("quantity");
 
     const orderPayload = {
       userEmail: user.email,
-      firstName: formData.firstName,
-      lastName: formData.lastName,
+      firstName: data.firstName,
+      lastName: data.lastName,
       productId: product._id,
       productName: product.name,
-      price: Number(product.price),
-      quantity: Number(formData.quantity),
-      orderTotal: Number(
-        (Number(product.price) * Number(formData.quantity)).toFixed(2)
-      ),
-      contactNumber: formData.contactNumber,
-      deliveryAddress: formData.deliveryAddress,
-      notes: formData.notes || "",
-      paymentStatus: product.paymentOption === "PayFast" ? "pending" : "COD", // adjust if needed
-      status: "pending", // initial order status
+      price: product.price,
+      quantity: Number(data.quantity),
+      orderTotal: Number(orderTotal),
+      contactNumber: data.contactNumber,
+      deliveryAddress: data.deliveryAddress,
+      notes: data.notes || "",
+      paymentOption: product.paymentOption,
+      status: "pending",
       createdAt: new Date(),
     };
 
-    // Confirmation
-    const result = await Swal.fire({
+    if (product.paymentOption === "PayFast") {
+      navigate("/payment", {
+        state: { orderPayload },
+      });
+      return;
+    }
+
+    const confirm = await Swal.fire({
       title: "Confirm Order?",
-      html: `
-        <strong>Product:</strong> ${orderPayload.productName} <br/>
-        <strong>Quantity:</strong> ${orderPayload.quantity} <br/>
-        <strong>Total:</strong> $${orderPayload.orderTotal}
-      `,
-      icon: "question",
+      text: `Total $${orderTotal}`,
       showCancelButton: true,
-      confirmButtonText: "Yes, Place Order",
     });
 
-    if (!result.isConfirmed) return;
+    if (!confirm.isConfirmed) return;
 
     try {
-      const res = await axiosSecure.post("/orders", orderPayload);
-      if (res.data.insertedId) {
-        await Swal.fire("Success", "Order created successfully!", "success");
-        navigate("/dashboard/my-orders");
-      } else {
-        Swal.fire("Error", "Failed to create order. Try again.", "error");
-      }
-    } catch (err) {
-      console.error(err);
-      Swal.fire("Error", "Server error. Try again later.", "error");
+      await axiosSecure.post("/orders", {
+        ...orderPayload,
+        paymentStatus: "COD",
+      });
+      Swal.fire("Success", "Order placed successfully", "success");
+      navigate("/dashboard/my-orders");
+    } catch {
+      Swal.fire("Error", "Failed to place order", "error");
     }
   };
 
-  if (loadingProduct)
-    return <p className="text-center py-20">Loading product...</p>;
+  if (isLoading) return <p className="text-center py-20">Loading...</p>;
 
   return (
-    <div className="max-w-4xl mx-auto bg-base-100 shadow rounded-2xl p-8 my-12">
-      <h2 className="text-2xl font-bold mb-4">Place Order</h2>
+    <div className="max-w-4xl mx-auto p-8 bg-base-100 shadow rounded-xl">
+      <h2 className="text-2xl font-bold mb-6">Place Order</h2>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        {/* Product summary */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="label">Product</label>
-            <input
-              value={product.name}
-              readOnly
-              className="input input-bordered w-full bg-base-200"
-            />
-          </div>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <input
+          value={product.name}
+          readOnly
+          className="input w-full cursor-not-allowed"
+        />
 
-          <div>
-            <label className="label">Unit Price</label>
-            <input
-              value={product.price}
-              readOnly
-              className="input input-bordered w-full bg-base-200"
-            />
-          </div>
-        </div>
+        <input
+          value={user.email}
+          readOnly
+          className="input w-full cursor-not-allowed"
+        />
 
-        {/* Email */}
-        <div>
-          <label className="label">Email</label>
-          <input
-            value={user.email}
-            readOnly
-            className="input input-bordered w-full bg-base-200"
-          />
-        </div>
+        <input
+          {...register("firstName", { required: true })}
+          placeholder="First Name"
+          className="input w-full"
+        />
 
-        {/* Names */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="label">First Name</label>
-            <input
-              {...register("firstName", { required: "First name is required" })}
-              className={`input input-bordered w-full ${
-                errors.firstName ? "input-error" : ""
-              }`}
-            />
-            {errors.firstName && (
-              <p className="text-sm text-red-500 mt-1">
-                {errors.firstName.message}
-              </p>
-            )}
-          </div>
+        <input
+          {...register("lastName", { required: true })}
+          placeholder="Last Name"
+          className="input w-full"
+        />
 
-          <div>
-            <label className="label">Last Name</label>
-            <input
-              {...register("lastName", { required: "Last name is required" })}
-              className={`input input-bordered w-full ${
-                errors.lastName ? "input-error" : ""
-              }`}
-            />
-            {errors.lastName && (
-              <p className="text-sm text-red-500 mt-1">
-                {errors.lastName.message}
-              </p>
-            )}
-          </div>
-        </div>
-
-        {/* Quantity & Total */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="label">Order Quantity</label>
-            <Controller
-              name="quantity"
-              control={control}
-              defaultValue={product.minimumOrderQuantity}
-              rules={{ validate: validateQuantity }}
-              render={({ field }) => (
-                <input
-                  type="number"
-                  {...field}
-                  min={product.minimumOrderQuantity}
-                  max={product.availableQuantity}
-                  className={`input input-bordered w-full ${
-                    errors.quantity ? "input-error" : ""
-                  }`}
-                />
-              )}
-            />
-            {errors.quantity && (
-              <p className="text-sm text-red-500 mt-1">
-                {errors.quantity.message}
-              </p>
-            )}
-            <p className="text-sm text-base-content/60 mt-2">
-              Min: {product.minimumOrderQuantity} • Available:{" "}
-              {product.availableQuantity}
-            </p>
-          </div>
-
-          <div>
-            <label className="label">Order Total (USD)</label>
-            <input
-              value={orderTotal}
-              readOnly
-              className="input input-bordered w-full bg-base-200"
-            />
-          </div>
-        </div>
-
-        {/* Contact & Address */}
-        <div>
-          <label className="label">Contact Number</label>
-          <input
-            {...register("contactNumber", {
-              required: "Contact number is required",
-            })}
-            className={`input input-bordered w-full ${
-              errors.contactNumber ? "input-error" : ""
-            }`}
-          />
-          {errors.contactNumber && (
-            <p className="text-sm text-red-500 mt-1">
-              {errors.contactNumber.message}
-            </p>
+        <Controller
+          name="quantity"
+          control={control}
+          defaultValue={product.minimumOrderQuantity}
+          rules={{ validate: validateQuantity }}
+          render={({ field }) => (
+            <input type="number" {...field} className="input w-full" />
           )}
-        </div>
+        />
 
-        <div>
-          <label className="label">Delivery Address</label>
-          <textarea
-            {...register("deliveryAddress", {
-              required: "Delivery address is required",
-            })}
-            rows={2}
-            className={`textarea textarea-bordered w-full ${
-              errors.deliveryAddress ? "textarea-error" : ""
-            }`}
-          />
-          {errors.deliveryAddress && (
-            <p className="text-sm text-red-500 mt-1">
-              {errors.deliveryAddress.message}
-            </p>
-          )}
-        </div>
+        {errors.quantity && (
+          <p className="text-red-500">{errors.quantity.message}</p>
+        )}
 
-        <div>
-          <label className="label">Additional Notes (optional)</label>
-          <textarea
-            {...register("notes")}
-            rows={3}
-            className="textarea textarea-bordered w-full"
-          />
-        </div>
+        <input
+          value={`$${orderTotal}`}
+          readOnly
+          className="input w-full cursor-not-allowed"
+        />
 
-        <div className="flex items-center gap-4">
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="btn btn-primary"
-          >
-            {isSubmitting ? "Placing..." : "Place Order"}
-          </button>
+        <input
+          {...register("contactNumber", { required: true })}
+          placeholder="Contact Number"
+          className="input w-full"
+        />
 
-          <p className="text-sm text-red-500">
-            {!product ||
-              (product.availableQuantity === 0 && "Product out of stock")}
-          </p>
-        </div>
+        <textarea
+          {...register("deliveryAddress", { required: true })}
+          placeholder="Delivery Address"
+          className="textarea w-full"
+        />
+
+        <textarea
+          {...register("notes")}
+          placeholder="Additional Notes (optional)"
+          rows={3}
+          className="textarea w-full"
+        />
+
+        <button className="btn btn-primary w-full" disabled={isSubmitting}>
+          Place Order
+        </button>
       </form>
     </div>
   );
