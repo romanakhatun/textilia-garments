@@ -11,7 +11,7 @@ This project was built as part of an **assignment to demonstrate full-stack deve
 
 ## Live Website
 
-**Live URL:** https://your-live-site-link.com
+**Live URL:** https://textila-garments.web.app/
 
 ---
 
