@@ -1,16 +1,62 @@
-# React + Vite
+# Textila – Garments Order & Production Tracker System
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Project Overview
 
-Currently, two official plugins are available:
+**Textila** is a full-stack web application designed to help small and medium-sized garment factories manage orders, production workflow, inventory, and delivery tracking efficiently.  
+The system supports **role-based dashboards** for **Admin, Manager, and Buyer**, with secure authentication and real-time order tracking.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+This project was built as part of an **assignment to demonstrate full-stack development skills**, including frontend UI/UX, backend APIs, authentication, payment handling, and deployment readiness.
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Live Website
 
-## Expanding the ESLint configuration
+**Live URL:** https://your-live-site-link.com
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+
+## Admin & Test Credentials
+
+### Admin
+
+- **Email:** romana1@email.com
+- **Password:** Romana1
+
+### Manager
+
+- **Email:** romana2@email.com
+- **Password:** Romana2
+
+### Buyer
+
+- **Email:** romana3@email.com
+- **Password:** Romana3
+
+---
+
+## Key Features
+
+### Authentication & Security
+
+- Firebase Authentication (Email & Password)
+- Google / GitHub Login (optional)
+- JWT-based route protection
+- Secure environment variables for Firebase & MongoDB
+- Role-based access control (Admin / Manager / Buyer)
+
+---
+
+### Public Pages
+
+- Modern Home Page with Framer Motion animations
+- Products from MongoDB (limited & full list)
+- Product Details Page
+- Responsive Navbar & Footer
+- 404 Not Found Page
+
+---
+
+### Buyer Features
+
+- View all products
+- Place orders with qua
