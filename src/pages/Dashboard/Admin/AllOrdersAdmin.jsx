@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import Swal from "sweetalert2";
+import LoadingSpinner from "../../../components/LoadingSpinner";
 
 const ORDER_STATUSES = [
   "pending",
@@ -105,7 +106,7 @@ const AllOrdersAdmin = () => {
       payload
     );
 
-    if (res.data.insertedId || res.status === 200 || res.status === 201) {
+    if (res.data.insertedId) {
       Swal.fire("Added", "Tracking update added", "success");
       refetch();
     } else {
@@ -126,7 +127,7 @@ const AllOrdersAdmin = () => {
     })
     .filter((o) => (statusFilter ? o.status === statusFilter : true));
 
-  if (isLoading) return <p className="text-center py-20">Loading...</p>;
+  if (isLoading) return <LoadingSpinner message="Loading..." />;
 
   return (
     <div className="p-6 lg:p-10">

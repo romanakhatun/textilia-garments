@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import Swal from "sweetalert2";
+import LoadingSpinner from "../../../components/LoadingSpinner";
 
 const PendingOrders = () => {
   const axiosSecure = useAxiosSecure();
@@ -16,6 +17,7 @@ const PendingOrders = () => {
       return res.data;
     },
   });
+  // console.log(orders);
 
   const changeStatus = async (orderId, newStatus) => {
     const confirm = await Swal.fire({
@@ -39,7 +41,22 @@ const PendingOrders = () => {
     }
   };
 
-  if (isLoading) return <p className="text-center py-10">Loading...</p>;
+  const handleViewOrders = async (id) => {
+    const res = await axiosSecure.get(`/orders/${id}`);
+    Swal.fire({
+      title: "Order Details",
+      html: `
+        <div>
+          <p><b>Product:</b> ${res.data.productName}</p>
+          <p><b>Quantity:</b> ${res.data.quantity}</p>
+          <p><b>Address:</b> ${res.data.deliveryAddress}</p>
+          <p><b>User:</b> ${res.data.userEmail}</p>
+        </div>
+      `,
+      width: 500,
+    });
+  };
+  if (isLoading) return <LoadingSpinner message="Loading..." />;
 
   return (
     <div className="p-6">
@@ -47,58 +64,76 @@ const PendingOrders = () => {
         Pending Orders ({orders.length})
       </h2>
 
-      <div className="space-y-4">
-        {orders.map((o) => (
-          <div
-            key={o._id}
-            className="p-4 border rounded-lg flex justify-between items-start"
-          >
-            <div>
-              <h3 className="font-semibold">{o.productName}</h3>
-              <p className="text-sm">
-                {o.userEmail} • Qty: {o.quantity}
-              </p>
-              <p className="text-sm mt-2">{o.deliveryAddress}</p>
-            </div>
+      <div className="overflow-x-auto">
+        <table className="table table-zebra">
+          {/* TABLE HEAD */}
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Produtc</th>
+              <th>User</th>
+              <th>Quantity</th>
+              <th>Order Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
 
-            <div className="flex flex-col gap-2">
-              <div>
-                <button
-                  onClick={() => changeStatus(o._id, "approved")}
-                  className="btn btn-sm btn-success mr-2"
+          {/* TABLE BODY */}
+          <tbody>
+            {orders.map((o, index) => (
+              <tr key={o._id}>
+                <td>{index + 1}</td>
+
+                <td className="text-base flex flex-col">
+                  <span>{o.productName}</span>
+                  <span className="text-xs">{o._id}</span>
+                </td>
+
+                <td>{o.userEmail}</td>
+
+                <td>{o.quantity}</td>
+                <td className="text-sm">
+                  {new Date(o.createdAt).toLocaleDateString()}
+                </td>
+
+                <td className="flex gap-2">
+                  <button
+                    onClick={() => changeStatus(o._id, "approved")}
+                    className="btn btn-xs btn-success"
+                  >
+                    Approve
+                  </button>
+
+                  <button
+                    onClick={() => changeStatus(o._id, "rejected")}
+                    className="btn btn-xs btn-error"
+                  >
+                    Reject
+                  </button>
+
+                  <button
+                    onClick={() => handleViewOrders(o._id)}
+                    className="btn btn-xs btn-ghost"
+                  >
+                    View
+                  </button>
+                </td>
+              </tr>
+            ))}
+
+            {/* EMPTY STATE */}
+            {orders.length === 0 && (
+              <tr>
+                <td
+                  colSpan="7"
+                  className="text-center py-8 text-base-content/70"
                 >
-                  Approve
-                </button>
-                <button
-                  onClick={() => changeStatus(o._id, "rejected")}
-                  className="btn btn-sm btn-error"
-                >
-                  Reject
-                </button>
-              </div>
-
-              <button
-                onClick={async () => {
-                  const res = await axiosSecure.get(`/orders/${o._id}`);
-                  Swal.fire({
-                    title: "Order Details",
-                    html: `<div>Product: ${res.data.productName}</div><div>Qty: ${res.data.quantity}</div><div>Address: ${res.data.deliveryAddress}</div>`,
-                    width: 600,
-                  });
-                }}
-                className="btn btn-xs btn-ghost"
-              >
-                View
-              </button>
-            </div>
-          </div>
-        ))}
-
-        {orders.length === 0 && (
-          <div className="p-8 text-center text-base-content/70">
-            No pending orders.
-          </div>
-        )}
+                  No pending orders.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
       </div>
     </div>
   );

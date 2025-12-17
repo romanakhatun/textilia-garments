@@ -62,18 +62,20 @@ const ManageUsers = () => {
   };
 
   return (
-    <div>
-      <h2 className="text-3xl font-bold mb-4">Manage Users ({users.length})</h2>
+    <div className="p-6 lg:p-10">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+        <h2 className="text-2xl font-bold">Manage Users ({users.length})</h2>
 
-      {/* SEARCH */}
-      <label className="input flex items-center gap-2 mb-5">
-        <input
-          type="search"
-          onChange={(e) => setSearchText(e.target.value)}
-          placeholder="Search users"
-          className="grow"
-        />
-      </label>
+        {/* SEARCH */}
+        <div className="flex items-center gap-3 w-full md:w-auto">
+          <input
+            type="search"
+            onChange={(e) => setSearchText(e.target.value)}
+            placeholder="Search users"
+            className="input input-bordered w-full md:w-72"
+          />
+        </div>
+      </div>
 
       <div className="overflow-x-auto">
         <table className="table">
