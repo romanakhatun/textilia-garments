@@ -27,13 +27,10 @@ const EditProduct = () => {
         name: product.name,
         category: product.category,
         price: product.price,
-        availableQuantity: product.availableQuantity,
-        minimumOrderQuantity: product.minimumOrderQuantity,
         paymentOption: product.paymentOption,
         images: product.images?.join(", "),
         demoVideo: product.demoVideo,
         description: product.description,
-        showOnHome: product.showOnHome,
       });
     }
   }, [product, reset]);
@@ -42,12 +39,9 @@ const EditProduct = () => {
     const updatedProduct = {
       ...data,
       price: parseFloat(data.price),
-      availableQuantity: parseInt(data.availableQuantity),
-      minimumOrderQuantity: parseInt(data.minimumOrderQuantity),
       images: data.images
         ? data.images.split(",").map((img) => img.trim())
         : [],
-      showOnHome: Boolean(data.showOnHome),
     };
 
     const confirm = await Swal.fire({
@@ -113,30 +107,10 @@ const EditProduct = () => {
                 className="input input-bordered w-full"
               />
             </div>
-
-            <div>
-              <label className="label font-medium">Available Quantity</label>
-              <input
-                type="number"
-                {...register("availableQuantity")}
-                className="input input-bordered w-full"
-              />
-            </div>
           </div>
 
           {/* RIGHT */}
           <div className="space-y-4">
-            <div>
-              <label className="label font-medium">
-                Minimum Order Quantity
-              </label>
-              <input
-                type="number"
-                {...register("minimumOrderQuantity")}
-                className="input input-bordered w-full"
-              />
-            </div>
-
             <div>
               <label className="label font-medium">Payment Option</label>
               <select
@@ -176,16 +150,6 @@ const EditProduct = () => {
             rows={4}
             className="textarea textarea-bordered w-full"
           />
-        </div>
-
-        {/* SHOW ON HOME */}
-        <div className="flex items-center gap-3">
-          <input
-            type="checkbox"
-            {...register("showOnHome")}
-            className="checkbox"
-          />
-          <span>Show on Home Page</span>
         </div>
 
         {/* ACTION BUTTONS */}
