@@ -4,57 +4,20 @@ import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import Swal from "sweetalert2";
 import LoadingSpinner from "../../../components/LoadingSpinner";
 
-const ORDER_STATUSES = [
-  "pending",
-  "approved",
-  "in_production",
-  "qc_checked",
-  "packed",
-  "shipped",
-  "delivered",
-  "cancelled",
-  "rejected",
-];
+const ORDER_STATUSES = ["pending", "approved", "rejected"];
 
 const AllOrdersAdmin = () => {
   const axiosSecure = useAxiosSecure();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
 
-  const {
-    data: orders = [],
-    refetch,
-    isLoading,
-  } = useQuery({
+  const { data: orders = [], isLoading } = useQuery({
     queryKey: ["admin-all-orders", statusFilter],
     queryFn: async () => {
       const res = await axiosSecure.get("/orders");
       return res.data;
     },
   });
-
-  const updateOrderStatus = async (orderId, newStatus) => {
-    const confirm = await Swal.fire({
-      title: `Change status to "${newStatus}"?`,
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonText: "Yes, update",
-    });
-
-    if (!confirm.isConfirmed) return;
-
-    const res = await axiosSecure.patch(`/orders/${orderId}/status`, {
-      status: newStatus,
-    });
-
-    if (res.data.modifiedCount || res.status === 200) {
-      Swal.fire("Updated", "Order status updated", "success");
-      refetch();
-    } else {
-      Swal.fire("Error", "Update failed", "error");
-    }
-  };
-
   const viewOrderDetails = async (order) => {
     const html = `
       <p><strong>Order ID:</strong> ${order._id}</p>
@@ -72,46 +35,26 @@ const AllOrdersAdmin = () => {
     });
   };
 
-  const addTrackingLog = async (order) => {
-    const { value: formValues } = await Swal.fire({
-      title: `Add tracking update for ${order._id}`,
-      html:
-        '<input id="sw-status" class="swal2-input" placeholder="status (e.g. cutting_completed)">' +
-        '<input id="sw-location" class="swal2-input" placeholder="location (optional)">' +
-        '<textarea id="sw-note" class="swal2-textarea" placeholder="note (optional)"></textarea>',
-      focusConfirm: false,
-      showCancelButton: true,
-      preConfirm: () => {
-        const status = document.getElementById("sw-status").value;
-        const location = document.getElementById("sw-location").value;
-        const note = document.getElementById("sw-note").value;
-        if (!status) {
-          Swal.showValidationMessage("Status is required");
-        }
-        return { status, location, note };
-      },
+  const viewTracking = async (orderId) => {
+    const res = await axiosSecure.get(`/tracking/${orderId}`);
+
+    const timeline = res.data
+      .map(
+        (t) => `
+        <div>
+          <b>${t.status}</b><br/>
+          <small>${new Date(t.timestamp).toLocaleString()}</small><br/>
+          ${t?.location || ""} ${t.note ? "• " + t.note : ""}
+        </div>
+      `
+      )
+      .join("");
+
+    Swal.fire({
+      title: "Tracking Timeline",
+      html: timeline || "<p>No tracking updates</p>",
+      width: 600,
     });
-
-    if (!formValues) return;
-
-    const payload = {
-      status: formValues.status,
-      location: formValues.location,
-      note: formValues.note,
-      createdAt: new Date(),
-    };
-
-    const res = await axiosSecure.post(
-      `/tracking/${order.trackingId}`,
-      payload
-    );
-
-    if (res.data.insertedId) {
-      Swal.fire("Added", "Tracking update added", "success");
-      refetch();
-    } else {
-      Swal.fire("Error", "Failed to add tracking update", "error");
-    }
   };
 
   const filtered = orders
@@ -173,7 +116,6 @@ const AllOrdersAdmin = () => {
               <th>Qty</th>
               <th>Total</th>
               <th>Status</th>
-              <th>Tracking</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -202,9 +144,7 @@ const AllOrdersAdmin = () => {
                     className={`badge ${
                       o.status === "approved"
                         ? "badge-success"
-                        : o.status === "suspended" ||
-                          o.status === "cancelled" ||
-                          o.status === "rejected"
+                        : o.status === "rejected"
                         ? "badge-error"
                         : "badge-info"
                     }`}
@@ -217,32 +157,18 @@ const AllOrdersAdmin = () => {
                   <div className="flex flex-col gap-1">
                     <div className="text-sm">{o.trackingId}</div>
                     <button
-                      onClick={() => addTrackingLog(o)}
+                      onClick={() => viewTracking(o._id)}
                       className="btn btn-xs btn-ghost"
                     >
-                      Add Tracking
+                      View Tracking
                     </button>
                     <button
                       onClick={() => viewOrderDetails(o)}
                       className="btn btn-xs btn-outline"
                     >
-                      View
+                      View Details
                     </button>
                   </div>
-                </td>
-
-                <td className="flex gap-2">
-                  <select
-                    className="select select-bordered select-sm"
-                    value={o.status}
-                    onChange={(e) => updateOrderStatus(o._id, e.target.value)}
-                  >
-                    {ORDER_STATUSES.map((s) => (
-                      <option key={s} value={s}>
-                        {s}
-                      </option>
-                    ))}
-                  </select>
                 </td>
               </tr>
             ))}

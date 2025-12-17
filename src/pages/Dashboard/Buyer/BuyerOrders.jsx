@@ -21,7 +21,7 @@ const BuyerOrders = () => {
     },
   });
 
-  console.log(orders);
+  // console.log(orders);
 
   const handleCancel = async (order) => {
     if (order.status !== "pending") {
@@ -82,7 +82,8 @@ const BuyerOrders = () => {
                 className={`badge ${
                   order.status === "pending"
                     ? "badge-warning"
-                    : order.status === "cancelled"
+                    : order.status === "cancelled" ||
+                      order.status === "rejected"
                     ? "badge-error"
                     : "badge-success"
                 }`}

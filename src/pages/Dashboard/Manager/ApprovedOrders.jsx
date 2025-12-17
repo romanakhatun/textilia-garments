@@ -149,7 +149,7 @@ const ApprovedOrders = () => {
     const timeline = res.data
       .map(
         (t) => `
-        <div style="text-align:left;margin-bottom:8px;">
+        <div>
           <b>${t.status}</b><br/>
           <small>${new Date(t.timestamp).toLocaleString()}</small><br/>
           ${t.location || ""} ${t.note ? "• " + t.note : ""}
