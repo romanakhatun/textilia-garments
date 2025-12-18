@@ -17,11 +17,6 @@ This project was built as part of an **assignment to demonstrate full-stack deve
 
 ## Admin & Test Credentials
 
-### Admin
-
-- **Email:** romana1@email.com
-- **Password:** Romana1
-
 ### Manager
 
 - **Email:** romana2@email.com
