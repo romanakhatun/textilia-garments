@@ -59,4 +59,120 @@ This project was built as part of an **assignment to demonstrate full-stack deve
 ### Buyer Features
 
 - View all products
-- Place orders with qua
+- Place orders with quantity validation (MOQ & stock limit)
+- **Payment Options**
+  - Cash on Delivery
+  - PayFast (Stripe Checkout)
+- View My Orders
+- Cancel Pending Orders
+- Track Order Progress (Timeline View)
+- View Payment History
+- Profile Page with Suspend Feedback (if applicable)
+
+---
+
+### Manager Dashboard
+
+- Add Product
+- Manage Own Products
+- View Pending Orders
+- Approve / Reject Orders
+- Add Production Tracking Updates
+  - Cutting
+  - Sewing
+  - Finishing
+  - QC Checked
+  - Packed
+  - Shipped
+- View Approved Orders
+- Profile Page
+
+---
+
+### Admin Dashboard
+
+- Manage Users (Approve / Suspend with reason)
+- Change User Roles (Buyer / Manager)
+- View All Products
+- Control Home Page Products
+- View All Orders
+- Filter Orders by Status
+- Analytics Dashboard (Optional Bonus)
+
+---
+
+## Payment System
+
+- Stripe Checkout Integration (PayFast)
+- Dynamic quantity & price calculation
+- Order is saved **only after successful payment**
+- Secure payment confirmation via backend
+- COD orders skip payment flow
+
+---
+
+## Additional Functionalities
+
+- Loading spinner during API calls
+- Toast & SweetAlert notifications
+- Search & filter (Users / Products / Orders)
+- Pagination implemented
+- Fully responsive design (Mobile / Tablet / Desktop)
+- Dark / Light Theme Toggle
+- Dynamic Page Titles
+
+---
+
+## Technologies Used
+
+### Frontend
+
+- React.js
+- React Router
+- Tailwind CSS
+- DaisyUI
+- TanStack React Query
+- React Hook Form
+- Framer Motion
+- SweetAlert2
+
+### Backend
+
+- Node.js
+- Express.js
+- MongoDB
+- Stripe API
+- JWT Authentication
+
+### Authentication
+
+- Firebase Authentication
+
+### Deployment
+
+- Client: Firebase
+- Server: Vercel
+
+---
+
+## NPM Packages Used
+
+### Client Side
+
+- react-router-dom
+- @tanstack/react-query
+- react-hook-form
+- framer-motion
+- sweetalert2
+- axios
+
+### Server Side
+
+- express
+- cors
+- mongodb
+- jsonwebtoken
+- stripe
+- dotenv
+
+---

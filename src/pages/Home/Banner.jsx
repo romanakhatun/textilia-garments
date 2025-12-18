@@ -17,7 +17,7 @@ const Banner = () => {
           {/* Subtitle */}
           <motion.p
             variants={itemVariants}
-            className="text-sm font-medium uppercase tracking-widest text-secondary mb-2 "
+            className="text-sm font-medium uppercase tracking-widest text-primary mb-2 "
           >
             <span className="highlight-title">TRACK YOUR SUCCESS.</span>
           </motion.p>

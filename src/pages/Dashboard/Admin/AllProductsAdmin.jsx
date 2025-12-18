@@ -7,6 +7,8 @@ import { Link } from "react-router";
 const AllProductsAdmin = () => {
   const axiosSecure = useAxiosSecure();
   const [search, setSearch] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   const {
     data: products = [],
@@ -19,6 +21,7 @@ const AllProductsAdmin = () => {
       return res.data;
     },
   });
+  // console.log(products);
 
   const handleDelete = async (product) => {
     const confirm = await Swal.fire({
@@ -59,6 +62,11 @@ const AllProductsAdmin = () => {
       p.category?.toLowerCase().includes(search.toLowerCase())
   );
 
+  const totalPages = Math.ceil(filtered.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedProducts = filtered.slice(startIndex, endIndex);
+
   return (
     <div className="p-6 lg:p-10">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
@@ -75,7 +83,10 @@ const AllProductsAdmin = () => {
             placeholder="Search by name or category..."
             className="input input-bordered w-full md:w-72"
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setCurrentPage(1);
+            }}
           />
         </div>
       </div>
@@ -95,7 +106,7 @@ const AllProductsAdmin = () => {
           </thead>
 
           <tbody>
-            {filtered.map((p, idx) => (
+            {paginatedProducts.map((p, idx) => (
               <tr key={p._id} className="hover:bg-base-200 transition">
                 <td>{idx + 1}</td>
 
@@ -108,6 +119,7 @@ const AllProductsAdmin = () => {
                     />
                     <div>
                       <div className="font-semibold">{p.name}</div>
+                      <div>{p.createdBy}</div>
                     </div>
                   </div>
                 </td>
@@ -154,6 +166,40 @@ const AllProductsAdmin = () => {
         {filtered.length === 0 && (
           <div className="p-10 text-center text-base-content/70">
             No products found.
+          </div>
+        )}
+
+        {totalPages > 1 && (
+          <div className="flex justify-center py-6">
+            <div className="join">
+              <button
+                className="join-item btn btn-sm"
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage(currentPage - 1)}
+              >
+                «
+              </button>
+
+              {[...Array(totalPages).keys()].map((num) => (
+                <button
+                  key={num}
+                  className={`join-item btn btn-sm ${
+                    currentPage === num + 1 ? "btn-primary" : ""
+                  }`}
+                  onClick={() => setCurrentPage(num + 1)}
+                >
+                  {num + 1}
+                </button>
+              ))}
+
+              <button
+                className="join-item btn btn-sm"
+                disabled={currentPage === totalPages}
+                onClick={() => setCurrentPage(currentPage + 1)}
+              >
+                »
+              </button>
+            </div>
           </div>
         )}
       </div>

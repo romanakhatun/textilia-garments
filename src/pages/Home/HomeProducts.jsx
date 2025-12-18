@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
-import LoadingSpinner from "../../components/LoadingSpinner";
 import ProductCard from "../../components/ProductCard";
 
 const HomeProducts = () => {
@@ -14,7 +13,7 @@ const HomeProducts = () => {
     },
   });
 
-  if (isLoading) return <LoadingSpinner message="Product Loading ..." />;
+  if (isLoading) return <h1 className="text-center">Product Loading ...</h1>;
 
   return (
     <section className="max-w-7xl mx-auto px-6 py-20 flex items-center flex-col">

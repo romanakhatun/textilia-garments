@@ -1,51 +1,91 @@
-import { useParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
+import { useParams } from "react-router";
 import LoadingSpinner from "../../../components/LoadingSpinner";
+
+const STEP_LABELS = {
+  cutting_completed: "Cutting Completed",
+  sewing_started: "Sewing Started",
+  finishing: "Finishing",
+  qc_checked: "QC Checked",
+  packed: "Packed",
+  shipped: "Shipped",
+  out_for_delivery: "Out for Delivery",
+};
 
 const TrackOrder = () => {
   const { orderId } = useParams();
   const axiosSecure = useAxiosSecure();
 
-  const { data: order, isLoading: loadingOrder } = useQuery({
-    queryKey: ["order", orderId],
-    queryFn: async () => (await axiosSecure.get(`/orders/${orderId}`)).data,
+  const { data: steps = [], isLoading } = useQuery({
+    queryKey: ["track-order", orderId],
+    queryFn: async () => {
+      const res = await axiosSecure.get(`/tracking/${orderId}`);
+      return res.data;
+    },
   });
 
-  const { data: logs = [], isLoading: loadingLogs } = useQuery({
-    queryKey: ["tracking", order?._id],
-    queryFn: async () => (await axiosSecure.get(`/tracking/${order._id}`)).data,
-  });
+  if (isLoading)
+    return <LoadingSpinner message="Loading tracking info..."></LoadingSpinner>;
 
-  console.log(logs);
-
-  if (loadingOrder || loadingLogs)
-    return <LoadingSpinner message="Loading..." />;
+  const latestIndex = steps.length - 1;
 
   return (
-    <div className="max-w-5xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">Track Order: {order._id}</h1>
-      <p className="mb-6">Product: {order.productName}</p>
+    <div className="p-6 max-w-3xl mx-auto">
+      <h2 className="text-2xl font-bold mb-6 text-center">Order Tracking</h2>
 
-      <div className="timeline space-y-6">
-        {logs
-          .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
-          .map((log, i) => (
-            <div key={i} className="flex items-start gap-4">
-              <div className="w-3 h-3 rounded-full mt-2 bg-primary"></div>
-              <div>
-                <div className="font-semibold">{log.status}</div>
-                <div className="text-sm text-gray-500">
-                  {new Date(log.createdAt).toLocaleString()}
-                </div>
-                {log.note && <div className="mt-2">{log.note}</div>}
-                {log.location && (
-                  <div className="text-sm text-gray-400">{log.location}</div>
-                )}
-              </div>
+      <ul className="timeline timeline-vertical">
+        {steps.map((step, idx) => (
+          <li key={step._id}>
+            <div
+              className={`timeline-start ${
+                idx === latestIndex ? "text-success font-bold" : ""
+              }`}
+            >
+              {new Date(step.timestamp).toLocaleString()}
             </div>
-          ))}
-      </div>
+
+            <div className="timeline-middle">
+              <span
+                className={`badge ${
+                  idx === latestIndex ? "badge-success" : "badge-outline"
+                }`}
+              >
+                {idx + 1}
+              </span>
+            </div>
+
+            <div
+              className={`timeline-end p-4 rounded border ${
+                idx === latestIndex ? "border-success bg-success/10" : ""
+              }`}
+            >
+              <p className="font-medium">
+                {STEP_LABELS[step.status] || step.status}
+              </p>
+
+              {step.location && (
+                <p className="text-sm">Location: {step.location}</p>
+              )}
+
+              {step.note && (
+                <p className="text-sm opacity-80 mt-1">{step.note}</p>
+              )}
+            </div>
+
+            <hr />
+          </li>
+        ))}
+      </ul>
+
+      {steps.length === 0 && (
+        <div className="p-6 text-center">
+          <h2 className="text-xl font-bold">Tracking Not Started</h2>
+          <p className="text-sm opacity-70">
+            Your order has not entered production yet.
+          </p>
+        </div>
+      )}
     </div>
   );
 };

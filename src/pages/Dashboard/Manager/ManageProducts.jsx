@@ -3,15 +3,19 @@ import Swal from "sweetalert2";
 import { Link } from "react-router";
 import { MdDelete, MdEdit } from "react-icons/md";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
+import useAuth from "../../../hooks/useAuth";
+import { useState } from "react";
 
 const ManageProducts = () => {
+  const [search, setSearch] = useState("");
   const axiosSecure = useAxiosSecure();
+  const { user } = useAuth();
 
   // Fetch all products
   const { data: products = [], refetch } = useQuery({
-    queryKey: ["all-products"],
+    queryKey: ["my-products", user?.email],
     queryFn: async () => {
-      const res = await axiosSecure.get("/products");
+      const res = await axiosSecure.get(`/products?email=${user?.email}`);
       return res.data;
     },
   });
@@ -36,11 +40,31 @@ const ManageProducts = () => {
     }
   };
 
+  console.log("manage Product", products);
+
+  const filtered = products.filter((p) => {
+    if (!search) return true;
+
+    const q = search.toLowerCase();
+    return (
+      p.name?.toLowerCase().includes(q) || p.category?.toLowerCase().includes(q)
+    );
+  });
+
   return (
     <div className="p-6 lg:p-10">
-      <h1 className="text-3xl font-bold mb-6">
-        Manage Products ({products.length})
-      </h1>
+      <div className="flex flex-col md:flex-row justify-between">
+        <h1 className="text-3xl font-bold mb-6">
+          Manage Products ({products.length})
+        </h1>
+        <input
+          type="text"
+          placeholder="Search by product / category"
+          className="input input-bordered w-full md:w-96"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+      </div>
 
       <div className="overflow-x-auto shadow-lg rounded-xl bg-base-100">
         <table className="table">
@@ -52,13 +76,13 @@ const ManageProducts = () => {
               <th>Price ($)</th>
               <th>Available</th>
               <th>Min Order</th>
-              <th>Home?</th>
+              <th>Payment Mode</th>
               <th>Actions</th>
             </tr>
           </thead>
 
           <tbody>
-            {products.map((product, index) => (
+            {filtered.map((product, index) => (
               <tr key={product._id} className="hover:bg-base-200 transition">
                 <td>{index + 1}</td>
 
@@ -81,23 +105,20 @@ const ManageProducts = () => {
                 <td>{product.availableQuantity}</td>
                 <td>{product.minimumOrderQuantity}</td>
 
-                {/* Show on Home */}
+                {/* Product Mode */}
                 <td>
-                  {product.showOnHome ? (
-                    <span className="badge badge-success">Yes</span>
-                  ) : (
-                    <span className="badge badge-ghost">No</span>
-                  )}
+                  {product.paymentOption === "Cash on Delivery"
+                    ? "COD"
+                    : product.paymentOption}
                 </td>
 
                 {/* ACTION BUTTONS */}
                 <td className="flex gap-3 items-center">
-                  {/* Edit Button */}
                   <Link
                     to={`/dashboard/edit-product/${product._id}`}
                     className="btn btn-sm btn-info text-white"
                   >
-                    <MdEdit size={18} />
+                    Edit
                   </Link>
 
                   {/* Delete Button */}
@@ -105,13 +126,19 @@ const ManageProducts = () => {
                     onClick={() => handleDelete(product)}
                     className="btn btn-sm btn-error text-white"
                   >
-                    <MdDelete size={18} />
+                    Delete
                   </button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
+
+        {filtered.length === 0 && (
+          <div className="p-10 text-center text-base-content/70">
+            No products found.
+          </div>
+        )}
       </div>
     </div>
   );

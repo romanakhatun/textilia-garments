@@ -1,6 +1,7 @@
 import { Outlet } from "react-router";
 import SocialLogin from "../pages/auth/SocialLogin";
 import Logo from "../components/Logo";
+import AuthImg from "../assets/authImg.jpg";
 
 const AuthLayouts = () => {
   return (
@@ -20,8 +21,7 @@ const AuthLayouts = () => {
 
             <div className="hidden md:flex items-center justify-center bg-[#fafdf0]">
               <div className="p-8">
-                {/* <img src={AuthImg} alt="AuthImg" /> */}
-                <p>Placeholder Image</p>
+                <img src={AuthImg} alt="AuthImg" className="max-w-lg" />
               </div>
             </div>
           </div>

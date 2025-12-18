@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import Process from "./Process";
 import CustomerFeedback from "./CustomerFeedback";
 import HomeProducts from "./HomeProducts";
+import Brands from "./Brands";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -25,6 +26,7 @@ const Home = () => {
       >
         <Banner />
         <HomeProducts />
+        <Brands />
         <Process />
         <hr className="border-t border-base-300" />
         <CustomerFeedback />
